@@ -25,6 +25,9 @@
           </div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item text-center">
+                <button  class="btn col-3"  onclick="like({{restaurant.id}})" >
+                  <i class="{% if restaurant in liked %} fas {% else %} far {% endif %} fa-heart text-danger" id="like-{{restaurant.id}}"></i>
+                </button>
                 <a href="{% url 'restaurant-detail' restaurant.id %}" class="btn btn-outline-dark">View</a>
             </li>
           </ul>
@@ -32,5 +35,36 @@
     </div>
     {% endfor %}
 </div>
+
+<script type="text/javascript">
+  function like(id){
+    var like = "#like-" + id
+
+    $.ajax({
+
+      type: 'GET',
+
+      url: '/restaurants/' + id + '/favorite/' ,
+
+      error: function(){
+        alert("oops")
+      },
+
+      success: function(data){
+        if (data.action === "like"){
+          $(like).removeClass("far")
+          $(like).addClass("fas")
+        }
+
+        else {
+          $(like).removeClass("fas")
+          $(like).addClass("far")
+        }
+
+      },
+
+    })
+  }
+</script>
 {% endblock content %}
 

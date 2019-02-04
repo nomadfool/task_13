@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+
     path('restaurants/list/',views.restaurant_list ,name='restaurant-list'),
     path('restaurants/<int:restaurant_id>/detail/',views.restaurant_detail ,name='restaurant-detail'),
 
@@ -38,7 +38,8 @@ urlpatterns = [
     path('no-access/',views.no_access ,name='no-access'),
 
     path('restaurants/favorite/',views.favorite_restaurants ,name='favorite-restaurant'),
-    path('restaurants/<int:restaurant_id>/favorite/',views.restaurant_favorite ,name='restaurant-favorite'),
+    path('restaurants/<int:restaurant_id>/favorite/',views.restaurant_favorite ,name='restaurants-favorite'),
+
 ]
 
 if settings.DEBUG:

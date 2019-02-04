@@ -1,19 +1,33 @@
 from django.shortcuts import render, redirect
-from .models import Restaurant, Item
+from .models import Restaurant, Item, FavoriteRestaurant
 from .forms import RestaurantForm, ItemForm, SignupForm, SigninForm
 from django.contrib.auth import login, authenticate, logout
 from django.db.models import Q
+from django.http import JsonResponse
 
 # This view will be used to favorite a restaurant
 def restaurant_favorite(request, restaurant_id):
-    
-    return
+    restaurant = Restaurant.objects.get(id=restaurant_id)
+    like, created = FavoriteRestaurant.objects.get_or_create(user=request.user, restaurant=restaurant)
+    if created:
+        action = "like"
+    else:
+        action = "unlike"
+        like.delete()
+    data = {
+        'action' : action
+    }
+    return JsonResponse(data)
 
 
 # This view will be used to display only restaurants a user has favorited
 def favorite_restaurants(request):
-    
-    return
+    restaurants = Restaurant.objects.all()
+    favorites = FavoriteRestaurant.objects.filter(user=request.user)
+    context = {
+       "favorites": favorites,
+    }
+    return render(request, 'favorites.html', context)
 
 
 def no_access(request):
@@ -60,11 +74,17 @@ def signout(request):
 
 def restaurant_list(request):
     restaurants = Restaurant.objects.all()
+    favorites = FavoriteRestaurant.objects.filter(user=request.user)
+    liked = []
+
+    for favorite in favorites:
+        liked.append(favorite.restaurant)
+
     query = request.GET.get('q')
     if query:
         # Not Bonus. Querying through a single field.
         # restaurants = restaurants.filter(name__icontains=query)
-        
+
         # Bonus. Querying through multiple fields.
         restaurants = restaurants.filter(
             Q(name__icontains=query)|
@@ -73,7 +93,8 @@ def restaurant_list(request):
         ).distinct()
         #############
     context = {
-       "restaurants": restaurants
+       "restaurants": restaurants,
+       "liked" : liked,
     }
     return render(request, 'list.html', context)
 
